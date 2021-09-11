@@ -25,7 +25,7 @@ export default function OutlinedCard() {
     const bull = <span className={classes.bullet}>•</span>;
 
     return (
-        <Card className={classes.root} variant="outlined">
+        <Card className={classes.root} elevation={20}>
             <CardContent>
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
                     Word of the Day
@@ -44,7 +44,7 @@ export default function OutlinedCard() {
             </CardContent>
             <CardActions>
                 <Button variant={"contained"} size="small">
-
+                    Cancel
                 </Button>
             </CardActions>
         </Card>

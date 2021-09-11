@@ -1,16 +1,17 @@
 import {alpha, makeStyles} from "@material-ui/core/styles";
-import {AppBar, Avatar, IconButton, InputBase, Toolbar, Typography} from "@material-ui/core";
-import microscope from "./drawables/microscope.svg";
+import {AppBar, IconButton, InputBase, Toolbar, Typography} from "@material-ui/core";
+import medbag from "../drawables/icon.svg";
 import SearchIcon from "@material-ui/icons/Search";
 import {AccountCircle} from "@material-ui/icons";
-import React from "react";
+import React, {useState} from "react";
+import useDelayedTask from "./useDelayedTask";
+import firebase from "../FirebaseWork"
+import TemporaryDrawer from './DrawerRight'
 
 const appbarstyle = makeStyles((theme) => ({
     root: {
-
         width: '100%',
         boxShadow:10,
-        borderRadius: 2,
         flexGrow: 1
     },
     grow:{
@@ -20,21 +21,17 @@ const appbarstyle = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
     },
     title: {
-
-
         display: 'none',
         [theme.breakpoints.up('sm')]: {
             display: 'block',
         },
     },
     search: {
-
         position: 'relative',
-
-        borderRadius: 20,
-        backgroundColor: alpha(theme.palette.common.black, 0.25),
+        borderRadius: 6,
+        backgroundColor: alpha("#377FC7", 0.10),
         '&:hover': {
-            backgroundColor: alpha(theme.palette.common.black, 0.30),
+            backgroundColor: alpha("#377FC7", 0.20),
         },
         marginLeft: 0,
         width: '100%',
@@ -57,9 +54,7 @@ const appbarstyle = makeStyles((theme) => ({
 
     },
     inputInput: {
-
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
         transition: theme.transitions.create('width'),
         width: '100%',
@@ -74,26 +69,35 @@ const appbarstyle = makeStyles((theme) => ({
     sectionMobile: {
         display: 'flex',
         marginLeft:10,
-        [theme.breakpoints.up('md')]: {
-            display: 'flex',
-        },
+        marginRight:1,
+
     },
 }));
 
-export default function PrimarySearchAppBar() {
+export default function PrimaryAppBar() {
     const classes = appbarstyle();
+    const [searchMsg, setSearch] = useState('');
 
+    const handleAccount = (h) => {
+        //firebase.auth().signOut().then(() => console.log("logged out"))
+    }
+    useDelayedTask(() => alert(searchMsg), 1000, [searchMsg])
+    const search = (sr) => {
+        setSearch(sr.target.value)
+    }
     return (
         <div className={classes.root}>
-            <AppBar position="static" color="default">
-                <Toolbar variant={'dense'}>
+            <AppBar position="sticky" color={"default"} elevation={8}>
+                <Toolbar variant={'dense'} >
                     <IconButton
                         edge="start"
                         className={classes.menuButton}
                         color="inherit"
+
+                        href={'/'}
                         aria-label="open drawer"
                     >
-                        <Avatar ><img height='28px' src={microscope}/></Avatar>
+                        <img alt={"MedBag"} height='28px' src={medbag}/>
                     </IconButton>
                     <Typography className={classes.title} variant="h6">
                         <b>AI Doctor</b>
@@ -104,8 +108,9 @@ export default function PrimarySearchAppBar() {
                             <SearchIcon/>
                         </div>
                         <InputBase
-                            placeholder="Search Symptoms…"
+                            onInput={search}
 
+                            placeholder="Search Disease"
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
@@ -113,21 +118,20 @@ export default function PrimarySearchAppBar() {
                             inputProps={{'aria-label': 'search'}}
                         />
                     </div>
-
                     <div className={classes.sectionMobile}>
                         <IconButton
                             aria-label="show more"
-
-                            aria-haspopup="true"
-
                             color="inherit"
+                            onClick={()=>handleAccount(1)}
                         >
                             <AccountCircle/>
                         </IconButton>
+
                     </div>
+
                 </Toolbar>
             </AppBar>
-
+            <TemporaryDrawer/>
         </div>
     );
 }
