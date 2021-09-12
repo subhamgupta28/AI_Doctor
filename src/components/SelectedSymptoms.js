@@ -8,6 +8,8 @@ import DoneIcon from "@material-ui/icons/Done"
 const chipstyle = makeStyles((theme) => ({
     root: {
         marginBottom: 12,
+        boxShadow:
+            "0px 0px 30px 1px rgba(70,70,70,0.8)",
         borderRadius: 16,
         position:"relative",
         maxWidth: '80%',
@@ -23,7 +25,7 @@ const chipstyle = makeStyles((theme) => ({
     },
     button:{
 
-       margin:8,
+       margin:16,
 
     }
 }));
@@ -51,6 +53,18 @@ export default function Chips() {
             setHide(false)
         });
     }, []);
+    useEffect(()=>{
+        const ref = firebase.database().ref("AI_DOCTOR/SERVERS");
+        ref.on('value', (snapshot)=>{
+            const b = snapshot.val()['SEV_ID_001']['online'];
+            if (b){
+                setMsg("Server is online now")
+                setOpen(!open)
+            }
+
+
+        });
+    },[]);
 
     const colors = (n) => {
         if (n===1)

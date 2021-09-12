@@ -15,15 +15,19 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 
 const cardstyle = makeStyles(() => ({
     root: {
-        top: '10%',
-        width: '90%',
-        position: "absolute",
-        // marginBottom:20,
+        marginTop: 40,
+        bottom: '50px',
+        top:'-20px',
+        width: '98%',
+        position: "relative",
+        marginBottom:20,
 
     },
 
     actionArea: {
-
+        minWidth: 100,
+        boxShadow:
+            "0px 0px 30px 1px rgba(70,70,70,0.8)",
         textAlign: "center",
         borderRadius: 16,
         transition: '0.2s',
@@ -31,6 +35,12 @@ const cardstyle = makeStyles(() => ({
             transform: 'scale(1.1)',
         },
     },
+    di:{
+        borderRadius:16,
+    },
+    ro:{
+
+    }
 }));
 
 export default function ShowDisease() {
@@ -80,13 +90,13 @@ export default function ShowDisease() {
             <Grid
                 hidden={hide}
                 container
-                spacing={2}
+                spacing={1}
                 direction="row"
                 justify="center"
                 alignItems="center"
             >
                 {data ? data.map((sp) =>
-                    <Grid item xs={2} key={sp.disease}>
+                    <Grid item xs={3} key={sp.disease}>
                         <Card className={classes.actionArea} elevation={8}>
                             <CardActionArea
                                 onClick={() => handlecard(sp)}
@@ -95,13 +105,6 @@ export default function ShowDisease() {
                                     subheader={sp.disease}
 
                                 />
-                                <Collapse in={false} timeout="auto" unmountOnExit>
-                                    <CardContent>
-                                        <Typography variant="h5" gutterBottom>
-                                            {sp.description}
-                                        </Typography>
-                                    </CardContent>
-                                </Collapse>
                             </CardActionArea>
                         </Card>
                     </Grid>
@@ -111,6 +114,7 @@ export default function ShowDisease() {
                 open={open}
                 onClose={handleClose}
                 keepMounted
+                classes={{paper: classes.di, root:classes.ro}}
                 scroll={"paper"}
             >
                 <DialogTitle>{"Predicted Disease is " + msg['disease']}</DialogTitle>

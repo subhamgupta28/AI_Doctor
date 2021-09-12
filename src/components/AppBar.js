@@ -11,8 +11,7 @@ import TemporaryDrawer from './DrawerRight'
 const appbarstyle = makeStyles((theme) => ({
     root: {
         width: '100%',
-        boxShadow:10,
-        flexGrow: 1
+        flexGrow: 1,
     },
     grow:{
         flexGrow:1,
@@ -79,7 +78,7 @@ export default function PrimaryAppBar() {
     const [searchMsg, setSearch] = useState('');
 
     const handleAccount = (h) => {
-        //firebase.auth().signOut().then(() => console.log("logged out"))
+        firebase.auth().signOut().then(() => console.log("logged out"))
     }
     useDelayedTask(() => alert(searchMsg), 1000, [searchMsg])
     const search = (sr) => {
@@ -88,7 +87,7 @@ export default function PrimaryAppBar() {
     return (
         <div className={classes.root}>
             <AppBar position="sticky" color={"default"} elevation={8}>
-                <Toolbar variant={'dense'} >
+                <Toolbar  variant={'dense'} >
                     <IconButton
                         edge="start"
                         className={classes.menuButton}

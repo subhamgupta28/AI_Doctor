@@ -9,6 +9,8 @@ const chipStyle = makeStyles((theme) => ({
         marginBottom: 18,
         borderRadius: 16,
         maxWidth: '95%',
+        boxShadow:
+            "0px 0px 30px 1px rgba(70,70,70,0.8)",
         position:"relative",
         alignItems: "center",
         justifyContent: 'center',
@@ -112,7 +114,7 @@ export default function Chips() {
                 <Chip
 
                     clickable
-                    // size={"small"}
+                    size={"small"}
                     onClick={()=>selectSymps(di)}
                     color={"primary"}
                     style={{backgroundColor: colors(parseInt(di.severity))}}

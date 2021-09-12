@@ -8,6 +8,10 @@ import SelectedSymptoms from "./SelectedSymptoms"
 import "../App.css"
 import ShowDialog from "./AggrementDialog";
 import ShowDisease from "./ShowDisease";
+import ParticlesBg from 'particles-bg'
+
+
+
 const textStyle = makeStyles((theme) => ({
     root: {
         margin: 8,
@@ -78,18 +82,19 @@ function SendSymptoms() {
 export default function Home(){
 
     return(
-        <div>
-            <Paper className="App" elevation={0}>
+        <Paper >
+            <div className="App">
             <header className="App-header">
                 <PrimaryAppBar/>
                 <ShowDialog/>
                 <ShowDisease/>
                 <SelectedSymptoms/>
                 {/*<SendSymptoms/>*/}
-
                 <Chips/>
             </header>
-            </Paper>
-        </div>
+
+            </div>
+                {/*<ParticlesBg  type="cobweb" color="#0000FF" bg={true} />*/}
+        </Paper>
     )
 }
