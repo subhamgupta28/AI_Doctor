@@ -12,22 +12,24 @@ import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import firebase from "../FirebaseWork";
 import DialogContentText from "@material-ui/core/DialogContentText";
+import {Alert} from "@material-ui/lab";
 
 const cardstyle = makeStyles(() => ({
     root: {
-        marginTop: 40,
-        bottom: '50px',
-        top:'-20px',
-        width: '98%',
+
+        marginTop:20,
+        width: '95%',
         position: "relative",
         marginBottom:20,
+
 
     },
 
     actionArea: {
         minWidth: 100,
-        boxShadow:
-            "0px 0px 30px 1px rgba(70,70,70,0.8)",
+        //maxWidth: 150,
+        backgroundColor: 'rgba(255, 255, 255, 0.01)',
+        backdropFilter: 'blur(7px)',
         textAlign: "center",
         borderRadius: 16,
         transition: '0.2s',
@@ -37,12 +39,30 @@ const cardstyle = makeStyles(() => ({
     },
     di:{
         borderRadius:16,
+        backgroundColor: '#180605',
     },
     ro:{
 
+    },
+    alerts:{
+       margin: 12,
     }
 }));
+function getTimeDiff(et, st) {
 
+    let ms =  parseInt(st) - parseInt(et);
+    let seconds = parseInt((ms/1000)%60)
+        , minutes = parseInt((ms/(1000*60))%60)
+        , hours = parseInt((ms/(1000*60*60))%24);
+    hours = (hours < 10) ? "0" + hours : hours;
+    minutes = (minutes < 10) ? "0" + minutes : minutes;
+    seconds = (seconds < 10) ? "0" + seconds : seconds;
+    //console.log(hours + ":" + minutes + ":" + seconds + "." + ms)
+
+    return parseInt(minutes) <= 10 && parseInt(hours)<=0;
+
+
+}
 export default function ShowDisease() {
     const classes = cardstyle();
     const [open, setOpen] = useState(false);
@@ -51,33 +71,43 @@ export default function ShowDisease() {
         description: '',
         uuid: '',
         time_stamp: '',
+        precautions: [],
     });
     const [data, setData] = useState([{
         disease: '',
         description: '',
         uuid: '',
         time_stamp: '',
+        precautions: [],
     }]);
     const [hide, setHide] = useState(true)
     const uuid = firebase.auth().currentUser.uid;
     const ref = firebase.database().ref("AI_DOCTOR/" + uuid + "/RESULT");
+    const ctime = Date.now();
     useEffect(() => {
-        ref.on("value", (snapshot) => {
-            const result = snapshot.val();
-            console.log(result)
-            const list = [];
-            for (let value in result) {
-                list.push({value, ...result[value]})
-            }
-            setData(list)
-            if (list.length === 0)
+        const getData = () => {
+            ref.on("value", (snapshot) => {
                 setHide(true)
-            else
-                setHide(false)
-            console.log(list)
-        });
+                const result = snapshot.val();
+                const list = [];
+                setData([])
+                for (let value in result) {
+                    if (getTimeDiff(parseInt(value), ctime)) {
+                        list.push({value, ...result[value]})
+                    }
+                    //list.push({value, ...result[value]})
+                }
+                setData(list)
+                if (list.length === 0)
+                    setHide(true)
+                else
+                    setHide(false)
+            });
+        }
+        getData()
+        setInterval(getData, 1000*60);
     }, []);
-    const handlecard = (sp) => {
+    const handleCard = (sp) => {
 
         setMsg(sp)
         setOpen(true)
@@ -86,20 +116,24 @@ export default function ShowDisease() {
         setOpen(false);
     };
     return (
-        <div className={classes.root}>
+        <div className={classes.root} hidden={hide}>
+            <Typography hidden={hide} variant="subtitle1" gutterBottom>
+                Results from last 10 min
+            </Typography>
             <Grid
                 hidden={hide}
                 container
                 spacing={1}
                 direction="row"
-                justify="center"
+                justifyContent="center"
                 alignItems="center"
             >
+
                 {data ? data.map((sp) =>
                     <Grid item xs={3} key={sp.disease}>
                         <Card className={classes.actionArea} elevation={8}>
                             <CardActionArea
-                                onClick={() => handlecard(sp)}
+                                onClick={() => handleCard(sp)}
                             >
                                 <CardHeader
                                     subheader={sp.disease}
@@ -117,13 +151,18 @@ export default function ShowDisease() {
                 classes={{paper: classes.di, root:classes.ro}}
                 scroll={"paper"}
             >
-                <DialogTitle>{"Predicted Disease is " + msg['disease']}</DialogTitle>
+                <DialogTitle >
+                    <Alert variant={"filled"} severity="error"> {"Predicted Disease is " + msg['disease']}</Alert>
+                    <div className={classes.alerts}> </div>
+                    <Alert variant={"filled"} severity="success"> {"Precautions " + msg['precautions'].toString().toUpperCase()}</Alert>
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {msg['description']}
+                        <Typography variant="subtitle1">
+                            {msg['description']}
+                        </Typography>
                     </DialogContentText>
                 </DialogContent>
-
             </Dialog>
         </div>
     );

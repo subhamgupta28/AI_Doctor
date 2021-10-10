@@ -1,17 +1,19 @@
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
-import {Avatar, Button, Chip, Paper} from "@material-ui/core";
+import {Avatar, Button, Chip, Grid, Paper, TextField, Typography} from "@material-ui/core";
 import firebase from "../FirebaseWork"
+import {Autocomplete} from "@material-ui/lab";
 
 
 const chipStyle = makeStyles((theme) => ({
     root: {
-        marginBottom: 18,
+        marginBottom: 12,
         borderRadius: 16,
         maxWidth: '95%',
+        backgroundColor: 'rgba(255, 255, 255, 0.01)',
+        backdropFilter: 'blur(7px)',
         boxShadow:
             "0px 0px 30px 1px rgba(70,70,70,0.8)",
-        position:"relative",
         alignItems: "center",
         justifyContent: 'center',
     },
@@ -24,40 +26,62 @@ const chipStyle = makeStyles((theme) => ({
     },
     button:{
 
-        margin:5,
+        marginBottom:10,
 
 
     },
+    text:{
+        marginTop: 10,
+        position: "relative",
+        left: '-33%'
+
+    },
+    search: {
+        margin: 8,
+        borderRadius: 12,
+        display: "flex",
+        alignItems: "center",
+        position:"relative",
+        left:20,
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        '& > *': {
+            margin: theme.spacing(1.0),
+        },
+
+    },
+    auto:{
+        width: 250
+    }
+
 
 
 }));
 
 export default function Chips() {
-    //const [sympList, setSympList] = useState([]);
     const [hide, setHide] = useState(true)
-    const [docs, setDocs] = useState([{}]);
     const [diseaseList, setDiseaseList] = useState([{
         symptom:'',
         severity:'',
     }]);
+    const [docs, setDocs] = useState([{}]);
+
     const classes = chipStyle();
     const dt = ['common_disease', 'above_common', 'concerning', 'slight_danger', 'average_danger', 'danger', 'critical']
-
     const uuid = firebase.auth().currentUser.uid;
-    // console.log(uuid)
-
+    const db = firebase.firestore();
     useEffect(()=>{
         const fetchData = async () => {
-            const db = firebase.firestore();
-
             const data = await db.collection("disease_severity").get()
             const value = data.docs.map(doc => doc.data());
             setDocs(value);
-
-            setDiseaseList(value[0]["common_disease"]);
+            try {
+                setDiseaseList(value[0]["common_disease"]);
+            }catch (e) {
+                console.log(e)
+            }
             setHide(false)
         }
-
         fetchData().then(() => {
             console.log("data fetched");
         });
@@ -91,24 +115,36 @@ export default function Chips() {
     }
 
     const colors = (n) => {
-        if (n===1)
-            return "#00ce7e"
-        if (n===2)
-            return "#009463"
-        if (n===3)
-            return "#377FC7"
-        if (n===4)
-            return "#006385"
-        if (n===5)
-            return "#d9c301"
-        if (n===6)
-            return "#FF9B2B"
-        if (n===7)
-            return "#FF2442"
+        switch (n) {
+            case 1: return "#00ce7e";
+            case 2: return "#009463";
+            case 3: return "#377FC7";
+            case 4: return "#006385";
+            case 5: return "#d9c301";
+            case 6: return "#FF9B2B";
+            case 7: return "#FF2442";
+            default: return;
+        }
     }
 
     return (
         <Paper className={classes.root} elevation={8} hidden={hide}>
+            <div className={classes.search}>
+                <Typography variant="h6" gutterBottom>
+                    Choose Symptoms or
+                </Typography>
+                <Button
+                    className={classes.button}
+                    variant={"text"}
+                    size={"small"}
+                    color={"primary"}
+                    id={'search_btn'}
+                    // onClick={()=>changeDType(0)}
+                >
+                    search
+                </Button>
+
+            </div>
             <div className={classes.item}>
                 {diseaseList ? diseaseList.map((di)=>
                 <Chip
@@ -118,14 +154,14 @@ export default function Chips() {
                     onClick={()=>selectSymps(di)}
                     color={"primary"}
                     style={{backgroundColor: colors(parseInt(di.severity))}}
-                    avatar={<Avatar >{di.symptom[0]}</Avatar>}
+                    // avatar={<Avatar >{di.symptom[0]}</Avatar>}
                     label={setUpper(di.symptom)}
                 />
                 ):''}
             </div>
             <Button
                 className={classes.button}
-                variant={"outlined"}
+                variant={"text"}
                 size={"small"}
                 color={"primary"}
                 onClick={()=>changeDType(0)}

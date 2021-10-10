@@ -8,6 +8,8 @@ import DoneIcon from "@material-ui/icons/Done"
 const chipstyle = makeStyles((theme) => ({
     root: {
         marginBottom: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.01)',
+        // backdropFilter: 'blur(1px)',
         boxShadow:
             "0px 0px 30px 1px rgba(70,70,70,0.8)",
         borderRadius: 16,
@@ -17,7 +19,9 @@ const chipstyle = makeStyles((theme) => ({
         justifyContent: 'center',
     },
     item: {
-        margin:6,
+        marginLeft: 10,
+        marginRight: 10,
+        marginTop: 10,
         flexWrap: 'wrap',
         '& > *': {
             margin: theme.spacing(0.4),
@@ -33,7 +37,8 @@ const chipstyle = makeStyles((theme) => ({
 
 export default function Chips() {
     const [hide, setHide] = useState(true)
-    const [sympList, setSympList] = useState([]);
+    const [sList, setSList] = useState([]);
+    const [sendList, setSendList] = useState([]);
     const [open, setOpen] = useState(false);
     const [msg, setMsg] = useState("")
     const classes = chipstyle();
@@ -41,16 +46,20 @@ export default function Chips() {
     const ref = firebase.database().ref("AI_DOCTOR/"+uuid+"/SYMPTOMS_SELECTED");
     useEffect(() => {
         ref.on("value", (snapshot) => {
-            const sympList = snapshot.val();
+            const outList = snapshot.val();
             const list = [];
-            for (let value in sympList) {
-                list.push({value, ...sympList[value]})
+            const sl = [];
+            for (let value in outList) {
+                list.push({value, ...outList[value]})
+                sl.push(value)
             }
-            setSympList(list);
-            if (sympList === null)
+            console.log(sl)
+            setSList(list);
+            setSendList(sl)
+            if (outList === null)
                 setHide(true)
             else
-            setHide(false)
+                setHide(false)
         });
     }, []);
     useEffect(()=>{
@@ -61,28 +70,20 @@ export default function Chips() {
                 setMsg("Server is online now")
                 setOpen(!open)
             }
-
-
         });
     },[]);
 
     const colors = (n) => {
-        if (n===1)
-            return "#00ce7e"
-        if (n===2)
-            return "#009463"
-        if (n===3)
-            return "#377FC7"
-        if (n===4)
-            return "#006385"
-        if (n===5)
-            return "#d9c301"
-        if (n===6)
-            return "#FF9B2B"
-        if (n===7)
-            return "#FF2442"
-
-
+        switch (n) {
+            case 1: return "#00ce7e";
+            case 2: return "#009463";
+            case 3: return "#377FC7";
+            case 4: return "#006385";
+            case 5: return "#d9c301";
+            case 6: return "#FF9B2B";
+            case 7: return "#FF2442";
+            default: return;
+        }
     }
     const handlePredict = () => {
         const time = Math.floor(Date.now()).toString();
@@ -91,6 +92,7 @@ export default function Chips() {
             uuid: uuid,
             time_stamp: time,
             predicted: false,
+            symptoms: sendList,
         }
         ref.child(time).set(data).then(() => {
             setMsg("Symptoms are being processed, please wait for results")
@@ -119,13 +121,13 @@ export default function Chips() {
         <Paper className={classes.root} elevation={6} hidden={hide}>
 
             <div className={classes.item}>
-                {sympList ? sympList.map((symp, index) =>
+                {sList ? sList.map((symp, index) =>
                     <Chip
                         clickable
                         size={"small"}
                         style={{backgroundColor: colors(symp.critical)}}
                         color={"primary"}
-                        avatar={<Avatar>{symp.title[0]}</Avatar>}
+                        avatar={<Avatar>{(symp.title[0]).toUpperCase()}</Avatar>}
                         label={setUpper(symp.title)}
                         deleteIcon={DoneIcon}
                         onDelete={() => handleDelete(symp)}
@@ -133,7 +135,7 @@ export default function Chips() {
                     />
                 ) : ''}
             </div>
-            <ButtonGroup  color="primary" className={classes.button}>
+            <ButtonGroup variant={"text"} color="primary"  size={"small"} className={classes.button}>
                 <Button onClick={handleClear}>Clear</Button>
                 <Button onClick={handlePredict}>Predict</Button>
             </ButtonGroup>

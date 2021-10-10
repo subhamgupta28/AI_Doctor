@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import firebase from "../FirebaseWork";
-import { Button, Paper, TextField} from "@material-ui/core";
+import {Button, Paper, TextField} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import PrimaryAppBar from "./AppBar";
 import Chips from "./Chip";
@@ -8,14 +8,14 @@ import SelectedSymptoms from "./SelectedSymptoms"
 import "../App.css"
 import ShowDialog from "./AggrementDialog";
 import ShowDisease from "./ShowDisease";
-import ParticlesBg from 'particles-bg'
-
+import ParticlesBg from "particles-bg";
+import SearchSymptoms from "./SearchSymptoms";
 
 
 const textStyle = makeStyles((theme) => ({
     root: {
         margin: 8,
-        borderRadius:12,
+        borderRadius: 12,
         display: "flex",
         alignItems: "center",
         justifyContent: 'center',
@@ -33,6 +33,7 @@ const textStyle = makeStyles((theme) => ({
         margin: 10,
     }
 }));
+
 function SendSymptoms() {
     const classes = textStyle();
     const [title, setTitle] = useState('');
@@ -40,7 +41,7 @@ function SendSymptoms() {
     const send = () => {
         if (title.toString().length !== 0) {
             const key = Math.floor(Date.now()).toString();
-            const ref = firebase.database().ref("AI_DOCTOR/"+uuid+"/SYMPTOMS");
+            const ref = firebase.database().ref("AI_DOCTOR/" + uuid + "/SYMPTOMS");
             const symptoms = {
                 title,
                 key: key,
@@ -79,22 +80,38 @@ function SendSymptoms() {
 
 }
 
-export default function Home(){
+const paperStyle = makeStyles((theme) => ({
+    paper: {
+        backgroundColor: 'rgba(255, 255, 255, 0.01)',
+        backdropFilter: 'blur(1px)',
+        borderRadius: 0,
+        // boxShadow:
+        //     "0px 0px 30px 1px rgba(70,70,70,0.8)",
+    }
 
-    return(
-        <Paper >
+}));
+export default function Home() {
+    const classes = paperStyle();
+    // const b = localStorage.getItem("agreement_accepted");
+    // console.log(b)
+    // if (b !== null) {
+    //     if (b)
+    //         localStorage.setItem("agreement_accepted", "false");
+    // }
+
+    return (
+        <Paper className={classes.paper}>
             <div className="App">
-            <header className="App-header">
-                <PrimaryAppBar/>
-                <ShowDialog/>
-                <ShowDisease/>
-                <SelectedSymptoms/>
-                {/*<SendSymptoms/>*/}
-                <Chips/>
-            </header>
-
+                <header className="App-header">
+                    <PrimaryAppBar/>
+                    <ShowDialog/>
+                    <ShowDisease/>
+                    <SearchSymptoms/>
+                    <SelectedSymptoms/>
+                    <Chips/>
+                </header>
             </div>
-                {/*<ParticlesBg  type="cobweb" color="#0000FF" bg={true} />*/}
+            {/*<ParticlesBg  type="cobweb" color="#FF2626" bg={true} />*/}
         </Paper>
     )
 }

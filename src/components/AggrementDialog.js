@@ -18,22 +18,14 @@ function PaperComponent(props) {
 
 export default function ShowDialog() {
     const [open, setOpen] = React.useState(false);
+    const b = localStorage.getItem("agreement_accepted");
+    console.log(b)
 
-    useEffect(()=>{
-        const fst = localStorage.getItem("logged_time")
-
-        if (fst==="false"){
-            setOpen(false)
-        }
-        else{
-            localStorage.setItem("logged_time", "true");
-            //setOpen(true)
-        }
-
-    });
+    if(b!==null && !b)
+        setOpen(!open)
 
     const handleClose = () => {
-        localStorage.setItem("logged_time", "true");
+        localStorage.setItem("agreement_accepted", "true");
         setOpen(false);
     };
 
@@ -46,7 +38,7 @@ export default function ShowDialog() {
                 aria-labelledby="draggable-dialog-title"
             >
                 <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                    Accept
+                    Disclaimer
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
