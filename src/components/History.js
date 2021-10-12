@@ -114,7 +114,7 @@ export default function ShowDisease() {
                                 <TableCell component="th" scope="row">
                                     {row.precautions}
                                 </TableCell>
-                                <TableCell align="right">{getTimeDiff(row.time_stamp, ctime)+" ago"}</TableCell>
+                                <TableCell >{getTimeDiff(row.time_stamp, ctime)+" ago"}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

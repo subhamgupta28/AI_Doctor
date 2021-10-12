@@ -67,8 +67,8 @@ export default function Chips() {
         ref.on('value', (snapshot)=>{
             const b = snapshot.val()['SEV_ID_001']['online'];
             if (b){
-                setMsg("Server is online now")
-                setOpen(!open)
+                //setMsg("Server is online now")
+                //setOpen(!open)
             }
         });
     },[]);

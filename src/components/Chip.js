@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import {Avatar, Button, Chip, Grid, Paper, TextField, Typography} from "@material-ui/core";
 import firebase from "../FirebaseWork"
 import {Autocomplete} from "@material-ui/lab";
+import {Search} from "@material-ui/icons";
 
 
 const chipStyle = makeStyles((theme) => ({
@@ -141,6 +142,7 @@ export default function Chips() {
                     id={'search_btn'}
                     // onClick={()=>changeDType(0)}
                 >
+                    <Search/>
                     search
                 </Button>
 

@@ -1,9 +1,7 @@
-import {alpha, makeStyles} from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import {
-    AppBar, Avatar, Backdrop, Dialog, DialogContent, DialogTitle,
+    AppBar, Button, Dialog,
     IconButton, InputAdornment,
-    InputBase,
-    ListItemIcon,
     Menu,
     MenuItem,
     TextField,
@@ -12,14 +10,14 @@ import {
 } from "@material-ui/core";
 import medbag from "../drawables/icon.svg";
 import SearchIcon from "@material-ui/icons/Search";
-import {AccountCircle} from "@material-ui/icons";
+import {AccountCircle, Close} from "@material-ui/icons";
 import React, {useState} from "react";
 import useDelayedTask from "./useDelayedTask";
 import firebase from "../FirebaseWork"
 import Divider from "@material-ui/core/Divider";
 import History from './History'
-import {Alert, Autocomplete} from "@material-ui/lab";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import {Autocomplete} from "@material-ui/lab";
+import MyAccount from "./MyAccount";
 
 
 const appbarstyle = makeStyles((theme) => ({
@@ -42,10 +40,6 @@ const appbarstyle = makeStyles((theme) => ({
     search: {
         position: 'relative',
         borderRadius: 6,
-        // backgroundColor: alpha("#b9b9b9", 0.10),
-        // '&:hover': {
-        //     backgroundColor: alpha("#b9b9b9", 0.20),
-        // },
         marginLeft: 0,
         width: '100%',
         [theme.breakpoints.up('sm')]: {
@@ -85,8 +79,13 @@ const appbarstyle = makeStyles((theme) => ({
         marginRight: 1,
 
     },
-    auto:{
-        width:300,
+    auto: {
+        width: 300,
+        position: "relative",
+    },
+    btn: {
+        width: 150,
+        marginLeft: "40%",
     }
 }));
 
@@ -94,6 +93,7 @@ export default function PrimaryAppBar() {
     const classes = appbarstyle();
     const [hisOpen, setHisOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [accOpen, setAcOpen] = useState(false);
     const [searchMsg, setSearch] = useState('');
     const [open, setOpen] = useState(false);
     const [res, setRes] = useState([{
@@ -126,11 +126,30 @@ export default function PrimaryAppBar() {
             console.log(value[0]['disease'], res);
         }
     }
+    const op = [
+        {label: 'The Shawshank Redemption', year: 1994},
+        {label: 'The Godfather', year: 1972},
+        {label: 'The Godfather: Part II', year: 1974},
+        {label: 'The Dark Knight', year: 2008},
+        {label: '12 Angry Men', year: 1957},
+        {label: "Schindler's List", year: 1993},
+        {label: 'Pulp Fiction', year: 1994},
+        {
+            label: 'The Lord of the Rings: The Return of the King',
+            year: 2003,
+        }
+    ]
     const handleLogout = () => {
         firebase.auth().signOut().then(() => console.log("logged out"))
     }
     const handleHistory = () => {
-       setHisOpen(true)
+        setHisOpen(true)
+    }
+    const handleAcClose = () => {
+        setAcOpen(false)
+    }
+    const handleAcOpen = () => {
+        setAcOpen(true)
     }
     return (
         <div className={classes.root}>
@@ -153,45 +172,31 @@ export default function PrimaryAppBar() {
 
                     </div>
                     <div className={classes.search}>
-                        {/*<div className={classes.searchIcon}>*/}
-                        {/*    <SearchIcon/>*/}
-                        {/*</div>*/}
-                        {/*<InputBase*/}
-                        {/*    onInput={search}*/}
-                        {/*    placeholder="Search Disease"*/}
-                        {/*    classes={{*/}
-                        {/*        root: classes.inputRoot,*/}
-                        {/*        input: classes.inputInput,*/}
-                        {/*    }}*/}
-                        {/*    inputProps={{'aria-label': 'search'}}*/}
-                        {/*>*/}
-
-                        {/*</InputBase>*/}
                         <Autocomplete
-                            disablePortal
                             freeSolo
                             className={classes.auto}
                             onChange={(event, newValue) => {
 
                             }}
 
-                            // options={searchList}
-                            // getOptionLabel={(option) => setUpper(option.symptom)}
-                            sx={{ width: 3000 }}
-                            renderInput={(params) =>  <TextField
-                                {...params}
-                                variant={"outlined"}
-                                color={"primary"}
-                                // label={'Search'}
-                                size={"small"}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />}
+                            options={op}
+                            getOptionLabel={(option) => option.label}
+                            sx={{width: 3000}}
+                            renderInput={(params) =>
+                                <TextField
+                                    {...params}
+                                    variant={"outlined"}
+                                    color={"primary"}
+                                    // label={'Search'}
+                                    size={"small"}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon/>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />}
                         />
                         <Menu
                             anchorEl={anchorEl}
@@ -199,10 +204,12 @@ export default function PrimaryAppBar() {
                             onClose={handleClose}
 
                         >
-                            <MenuItem>
+                            <MenuItem
+                                onClick={handleAcOpen}
+                            >
                                 My account
                             </MenuItem>
-                            <Divider />
+                            <Divider/>
                             <MenuItem
                                 onClick={handleHistory}
                             >
@@ -229,14 +236,38 @@ export default function PrimaryAppBar() {
                 </Toolbar>
             </AppBar>
             <Dialog
+                fullScreen
                 open={hisOpen}
                 onClose={handleClose}
-                keepMounted
-                maxWidth={'xl'}
                 scroll={"paper"}
             >
                 <History/>
-
+                <Button
+                    className={classes.btn}
+                    variant={"contained"}
+                    onClick={handleClose}
+                    size={"small"}
+                >
+                    <Close/>
+                    Close
+                </Button>
+            </Dialog>
+            <Dialog
+                fullScreen
+                open={accOpen}
+                onClose={handleAcClose}
+                scroll={"paper"}
+            >
+                <MyAccount/>
+                <Button
+                    className={classes.btn}
+                    variant={"contained"}
+                    onClick={handleAcClose}
+                    size={"small"}
+                >
+                    <Close/>
+                    Close
+                </Button>
             </Dialog>
         </div>
     );
