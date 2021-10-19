@@ -40,6 +40,11 @@ const cardstyle = makeStyles(() => ({
     },
     ro:{
 
+    },
+    b:{
+        color:'#218aff',
+        fontSize:18,
+        fontFamily:"monospace",
     }
 }));
 function getTimeDiff(et, st) {
@@ -89,17 +94,22 @@ export default function ShowDisease() {
         getData()
     }, []);
 
+    const toUpper = (t) => {
 
+        for (let i = 0; i < t.length; i++) {
+            t[i] = t[i].charAt(0).toUpperCase()+t[i].slice(1);
+        }
+        return t;
+    }
     return (
-        <div className={classes.root} hidden={false}>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <div className={classes.root}>
+            <TableContainer component={Paper} >
+                <Table sx={{ minWidth: 650 }} aria-label="simple table" >
                     <TableHead>
                         <TableRow>
-                            <TableCell>Diseases </TableCell>
-                            <TableCell align="left">Precautions</TableCell>
-                            <TableCell align="left">Time</TableCell>
-
+                            <TableCell><b className={classes.b}>Diseases</b> </TableCell>
+                            <TableCell align="left"><b  className={classes.b}>Precautions</b></TableCell>
+                            <TableCell align="left"><b  className={classes.b}>Time</b></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -112,7 +122,7 @@ export default function ShowDisease() {
                                     {row.disease}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    {row.precautions}
+                                    {toUpper(row.precautions).join(", ")}
                                 </TableCell>
                                 <TableCell >{getTimeDiff(row.time_stamp, ctime)+" ago"}</TableCell>
                             </TableRow>

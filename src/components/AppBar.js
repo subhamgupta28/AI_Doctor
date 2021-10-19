@@ -1,22 +1,25 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {
-    AppBar, Button, Dialog,
+    AppBar, Box, Dialog,
     IconButton, InputAdornment,
-    Menu,
-    MenuItem,
     TextField,
     Toolbar,
     Typography
 } from "@material-ui/core";
 import medbag from "../drawables/icon.svg";
 import SearchIcon from "@material-ui/icons/Search";
-import {AccountCircle, Close} from "@material-ui/icons";
-import React, {useState} from "react";
+import {AccountCircle, Close, HistoryOutlined, Lock, PersonOutlined} from "@material-ui/icons";
+import React, {useEffect, useState} from "react";
 import useDelayedTask from "./useDelayedTask";
 import firebase from "../FirebaseWork"
-import Divider from "@material-ui/core/Divider";
-import History from './History'
 import {Autocomplete} from "@material-ui/lab";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import History from "./History";
+import Button from "@material-ui/core/Button";
 import MyAccount from "./MyAccount";
 
 
@@ -24,6 +27,7 @@ const appbarstyle = makeStyles((theme) => ({
     root: {
         width: '100%',
         flexGrow: 1,
+
     },
     grow: {
         flexGrow: 2,
@@ -47,31 +51,6 @@ const appbarstyle = makeStyles((theme) => ({
             width: 'auto',
         },
     },
-    searchIcon: {
-        padding: theme.spacing(0, 2),
-        height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    inputRoot: {
-        color: 'inherit',
-
-    },
-    inputInput: {
-        padding: theme.spacing(1, 1, 1, 0),
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '20ch',
-            '&:focus': {
-                width: '30ch',
-            },
-        },
-    },
 
     sectionMobile: {
         display: 'flex',
@@ -84,34 +63,46 @@ const appbarstyle = makeStyles((theme) => ({
         position: "relative",
     },
     btn: {
-        width: 150,
-        marginLeft: "40%",
+
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    active:{
+        backgroundColor: 'rgba(255, 255, 255, 0.12)',
     }
+
 }));
 
 export default function PrimaryAppBar() {
     const classes = appbarstyle();
-    const [hisOpen, setHisOpen] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [accOpen, setAcOpen] = useState(false);
-    const [searchMsg, setSearch] = useState('');
     const [open, setOpen] = useState(false);
+    const [hisOpen, setHisOpen] = useState(false);
+    const [accOpen, setAcOpen] = useState(false);
+    const [op, setOp] = useState([]);
+    const [searchMsg, setSearch] = useState('');
     const [res, setRes] = useState([{
         disease: "",
         precaution: [],
         description: ""
     }])
-    const handleClose = () => {
-        setOpen(!open)
-        setHisOpen(false)
-        setAnchorEl(null);
-    };
-    const db = firebase.firestore();
-    const handleAccount = (event) => {
-        setOpen(!open);
-        setAnchorEl(event.currentTarget)
 
-    }
+    const db = firebase.firestore();
+    useEffect(() => {
+        setOp([
+            {label: 'The Shawshank Redemption', year: 1994},
+            {label: 'The Godfather', year: 1972},
+            {label: 'The Godfather: Part II', year: 1974},
+            {label: 'The Dark Knight', year: 2008},
+            {label: '12 Angry Men', year: 1957},
+            {label: "Schindler's List", year: 1993},
+            {label: 'Pulp Fiction', year: 1994},
+            {
+                label: 'The Lord of the Rings: The Return of the King',
+                year: 2003,
+            }
+        ]);
+    }, [])
     useDelayedTask(() => doSearch(searchMsg), 1000, [searchMsg])
     const search = (sr) => {
         setSearch(sr.target.value)
@@ -126,34 +117,55 @@ export default function PrimaryAppBar() {
             console.log(value[0]['disease'], res);
         }
     }
-    const op = [
-        {label: 'The Shawshank Redemption', year: 1994},
-        {label: 'The Godfather', year: 1972},
-        {label: 'The Godfather: Part II', year: 1974},
-        {label: 'The Dark Knight', year: 2008},
-        {label: '12 Angry Men', year: 1957},
-        {label: "Schindler's List", year: 1993},
-        {label: 'Pulp Fiction', year: 1994},
+    const handleOpen = () => {
+        setOpen(true)
+    }
+    const handleClose = () => {
+
+        setOpen(false)
+
+    }
+    const handleAccount = (event) => {
+        setOpen(!open);
+
+
+    }
+    const itemsList = [
         {
-            label: 'The Lord of the Rings: The Return of the King',
-            year: 2003,
+            text: "Profile",
+            icon: <PersonOutlined/>,
+            onClick: () => setAcOpen(true)
+        },
+        {
+            text: "History",
+            icon: <HistoryOutlined/>,
+            onClick: () => setHisOpen(true)
+        },
+        {
+            text: "Logout",
+            icon: <Lock/>,
+            onClick: () => handleLogout()
+        },
+        {
+            text: "Close",
+            icon: <Close/>,
+            onClick: () => console.log("")
         }
-    ]
+    ];
     const handleLogout = () => {
         firebase.auth().signOut().then(() => console.log("logged out"))
     }
-    const handleHistory = () => {
-        setHisOpen(true)
-    }
+
     const handleAcClose = () => {
         setAcOpen(false)
     }
-    const handleAcOpen = () => {
-        setAcOpen(true)
+    const handleHisClose = () => {
+        setHisOpen(false)
     }
+
     return (
         <div className={classes.root}>
-            <AppBar position="sticky" color={"default"} elevation={8}>
+            <AppBar position="sticky" color={"transparent"} elevation={8}>
                 <Toolbar variant={'dense'}>
                     <IconButton
                         edge="start"
@@ -174,14 +186,13 @@ export default function PrimaryAppBar() {
                     <div className={classes.search}>
                         <Autocomplete
                             freeSolo
-                            className={classes.auto}
-                            onChange={(event, newValue) => {
-
-                            }}
-
+                            id="combo-box-demo"
                             options={op}
+                            onChange={(event, newValue) => {
+                                console.log(newValue, "new")
+                            }}
                             getOptionLabel={(option) => option.label}
-                            sx={{width: 3000}}
+                            sx={{width: 300}}
                             renderInput={(params) =>
                                 <TextField
                                     {...params}
@@ -198,35 +209,13 @@ export default function PrimaryAppBar() {
                                     }}
                                 />}
                         />
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-
-                        >
-                            <MenuItem
-                                onClick={handleAcOpen}
-                            >
-                                My account
-                            </MenuItem>
-                            <Divider/>
-                            <MenuItem
-                                onClick={handleHistory}
-                            >
-                                History
-                            </MenuItem>
-                            <MenuItem
-                                onClick={handleLogout}
-                            >
-                                Logout
-                            </MenuItem>
-                        </Menu>
                     </div>
                     <div className={classes.sectionMobile}>
                         <IconButton
+                            id={"menu_btn"}
                             aria-label="show more"
                             color="inherit"
-                            onClick={handleAccount}
+                            onClick={handleOpen}
                         >
                             <AccountCircle/>
                         </IconButton>
@@ -235,22 +224,51 @@ export default function PrimaryAppBar() {
 
                 </Toolbar>
             </AppBar>
+            <React.Fragment key={'right'}>
+                <Drawer variant={"temporary"} anchor={'right'} open={open} onClose={handleClose}>
+                    <Box
+                        sx={{width: 250}}
+                        role="presentation"
+                        onClick={handleClose}
+                    >
+                        <List>
+                            {itemsList.map((item, index) => {
+                                const {text, icon, onClick} = item;
+                                return (
+
+                                    <ListItem button key={text} onClick={onClick} activeClassName={classes.active}>
+                                        {icon && <ListItemIcon>{icon}</ListItemIcon>}
+                                        <ListItemText primary={text} />
+                                    </ListItem>
+
+
+                                )
+                            })}
+                        </List>
+                    </Box>
+
+                </Drawer>
+            </React.Fragment>
             <Dialog
                 fullScreen
                 open={hisOpen}
-                onClose={handleClose}
+                onClose={handleHisClose}
                 scroll={"paper"}
             >
                 <History/>
-                <Button
+                <div
                     className={classes.btn}
-                    variant={"contained"}
-                    onClick={handleClose}
-                    size={"small"}
                 >
-                    <Close/>
-                    Close
-                </Button>
+                    <Button
+
+                        variant={"contained"}
+                        onClick={handleHisClose}
+                        size={"small"}
+                    >
+                        <Close/>
+                        Close
+                    </Button>
+                </div>
             </Dialog>
             <Dialog
                 fullScreen
@@ -259,16 +277,21 @@ export default function PrimaryAppBar() {
                 scroll={"paper"}
             >
                 <MyAccount/>
-                <Button
+                <div
                     className={classes.btn}
-                    variant={"contained"}
-                    onClick={handleAcClose}
-                    size={"small"}
                 >
-                    <Close/>
-                    Close
-                </Button>
+                    <Button
+
+                        variant={"contained"}
+                        onClick={handleAcClose}
+                        size={"small"}
+                    >
+                        <Close/>
+                        Close
+                    </Button>
+                </div>
             </Dialog>
+
         </div>
     );
 }

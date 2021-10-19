@@ -10,6 +10,7 @@ import ShowDialog from "./AggrementDialog";
 import ShowDisease from "./ShowDisease";
 import ParticlesBg from "particles-bg";
 import SearchSymptoms from "./SearchSymptoms";
+import DrawerRight from "./DrawerRight";
 
 
 const textStyle = makeStyles((theme) => ({
@@ -109,6 +110,7 @@ export default function Home() {
                     <SearchSymptoms/>
                     <SelectedSymptoms/>
                     <Chips/>
+
                 </header>
             </div>
             {/*<ParticlesBg  type="cobweb" color="#FF2626" bg={true} />*/}

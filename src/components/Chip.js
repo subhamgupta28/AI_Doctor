@@ -2,7 +2,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
 import {Avatar, Button, Chip, Grid, Paper, TextField, Typography} from "@material-ui/core";
 import firebase from "../FirebaseWork"
-import {Autocomplete} from "@material-ui/lab";
+import {Autocomplete, Skeleton} from "@material-ui/lab";
 import {Search} from "@material-ui/icons";
 
 
@@ -159,7 +159,9 @@ export default function Chips() {
                     // avatar={<Avatar >{di.symptom[0]}</Avatar>}
                     label={setUpper(di.symptom)}
                 />
-                ):''}
+                ):(
+                    <Skeleton variant="rectangular" animation="wave"  />
+                )}
             </div>
             <Button
                 className={classes.button}

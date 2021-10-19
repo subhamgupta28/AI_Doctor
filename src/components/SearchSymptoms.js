@@ -1,5 +1,5 @@
-import {Chip, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@material-ui/core";
-import {Autocomplete} from "@material-ui/lab";
+import {Chip, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@material-ui/core";
+import {Autocomplete, Skeleton} from "@material-ui/lab";
 import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import firebase from "../FirebaseWork";
@@ -26,6 +26,7 @@ const searchStyle = makeStyles((theme) => ({
 
     },
     d: {
+        marginTop: 10,
         width: 500,
         flexWrap: 'wrap',
         '& > *': {
@@ -34,9 +35,15 @@ const searchStyle = makeStyles((theme) => ({
         marginBottom: 20,
     },
 
-    f:{
+    f: {
         height: 200,
-    }
+    },
+    di:{
+        borderRadius:16,
+    },
+    ro:{
+
+    },
 
 }));
 
@@ -68,10 +75,10 @@ export default function SearchSymptoms() {
             }
         }
         fetchData().then(() => {
-            reference.on("value", (snapshot)=>{
+            reference.on("value", (snapshot) => {
                 const li = snapshot.val();
                 const list = [];
-                for (let v in li){
+                for (let v in li) {
                     list.push({v, ...li[v]})
                 }
                 setResult(list)
@@ -113,55 +120,35 @@ export default function SearchSymptoms() {
         setOpen(false)
     }
     const handleChange = (t) => {
-        console.log(t)
+        console.log(t, "t")
+            t.forEach((i)=>{
+                console.log(i)
+                const title = i.symptom;
+                const critical = i.severity;
+                console.log(title, critical)
+                const symptoms = {
+                    title,
+                    "key": title,
+                    "critical": critical,
+                    "selected": true
+                }
+                console.log(symptoms)
+                reference
+                    .child(title)
+                    .set(symptoms)
+                    .then(() => console.log(t[i]));
+            })
 
-        if (t!==null){
-            const title = t.symptom;
-            const critical = t.severity
-            const symptoms = {
-                title,
-                "key": title,
-                "critical": critical,
-                "selected": true
-            }
-            reference
-                .child(title)
-                .set(symptoms)
-                .then(() => console.log("Symptoms added"));
-            //setResult(resultList.concat(t))
-        }
-
-
-    }
-    const colors = (n) => {
-        switch (n) {
-            case 1:
-                return "#00ce7e";
-            case 2:
-                return "#009463";
-            case 3:
-                return "#377FC7";
-            case 4:
-                return "#006385";
-            case 5:
-                return "#d9c301";
-            case 6:
-                return "#FF9B2B";
-            case 7:
-                return "#FF2442";
-            default:
-                return;
-        }
     }
     const handleDelete = (sp) => {
         reference.child(sp.key).remove().then(r => {
-
-
+            //console.log(r.error)
         })
     }
     return (
         <React.Fragment>
             <Dialog
+                classes={{paper: classes.di, root:classes.ro}}
                 onClose={handleClose}
                 open={open}>
                 <DialogTitle>
@@ -172,23 +159,27 @@ export default function SearchSymptoms() {
                     className={classes.auto}
                     freeSolo
                     options={searchList}
-                    getOptionLabel={(op)=>{
+                    getOptionLabel={(op) => {
                         return setUpper(op.symptom)
                     }}
-                    onChange={(n,t)=>
+                    onChange={(n, t) =>
                         handleChange(t)
                     }
-                    sx={{ width: 3000 }}
+                    sx={{width: 3000}}
                     renderInput={(params) =>
                         <TextField
                             {...params}
-                        variant={"outlined"}
-                        color={"primary"}
-                        label={"Search"}
-                        size={"small"}
-                    />}
-                    />
-                <DialogContent>
+                            variant={"outlined"}
+                            color={"primary"}
+                            label={"Search"}
+                            size={"small"}
+                        />}
+                />
+                <DialogContent
+                >
+                    <Typography>
+                        Already selected symptoms
+                    </Typography>
                     <div className={classes.d}>
                         {resultList ? resultList.map((di) =>
                             <Chip
@@ -202,7 +193,9 @@ export default function SearchSymptoms() {
                                 deleteIcon={DoneIcon}
                                 onDelete={() => handleDelete(di)}
                             />
-                        ) : ''}
+                        ) : (
+                            <Skeleton variant="rectangular" width={210} height={118} />
+                        )}
                     </div>
                     <div className={classes.f}>
 

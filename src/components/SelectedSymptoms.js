@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import firebase from "../FirebaseWork";
 import {Avatar, Chip, Snackbar, Fade, Paper, ButtonGroup, Button} from "@material-ui/core";
 import DoneIcon from "@material-ui/icons/Done"
+import {Skeleton} from "@material-ui/lab";
 
 
 const chipstyle = makeStyles((theme) => ({
@@ -133,7 +134,9 @@ export default function Chips() {
                         onDelete={() => handleDelete(symp)}
 
                     />
-                ) : ''}
+                ) : (
+                    <Skeleton variant="rectangular" width={210} height={118} />
+                )}
             </div>
             <ButtonGroup variant={"text"} color="primary"  size={"small"} className={classes.button}>
                 <Button onClick={handleClear}>Clear</Button>
