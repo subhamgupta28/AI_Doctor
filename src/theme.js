@@ -5,7 +5,7 @@ import { amber, blue} from "@material-ui/core/colors";
 
 const theme = createTheme({
     palette:{
-        type:"dark",
+        type:"light",
         primary:{
             main: blue[500],
             contrastText: "#FFFFFF",
@@ -17,10 +17,10 @@ const theme = createTheme({
         },
         contrastThreshold: 3,
         tonalOffset: 0.2,
-        background:{
-            paper: '#212121',
-            default: '#fff'
-        }
+        // background:{
+        //     paper: '#212121',
+        //     default: '#fff'
+        // }
 
     }
 })

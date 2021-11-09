@@ -7,6 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Paper from '@material-ui/core/Paper';
 import Draggable from 'react-draggable';
+import firebase from "../FirebaseWork";
 
 function PaperComponent(props) {
     return (
@@ -18,17 +19,35 @@ function PaperComponent(props) {
 
 export default function ShowDialog() {
     const [open, setOpen] = React.useState(false);
-    const b = localStorage.getItem("agreement_accepted");
-    console.log(b)
 
-    if(b!==null && !b)
-        setOpen(!open)
+    const uid = firebase.auth().currentUser.uid;
+    const ref = firebase.database().ref("AI_DOCTOR/" + uid + "/PROFILE");
+    useEffect(() => {
+        ref.on("value", (snapshot) => {
+            const data = snapshot.val();
+            console.log(data.AGREEMENT===true)
+            if (data.AGREEMENT !== undefined) {
+                if (data.AGREEMENT === false)
+                    setOpen(true)
+            } else {
+                setOpen(true)
+                console.log(data.AGREEMENT);
+            }
 
+
+        })
+    }, [])
     const handleClose = () => {
-        localStorage.setItem("agreement_accepted", "true");
         setOpen(false);
     };
-
+    const handleAccept = () => {
+      ref.update({
+          AGREEMENT: true,
+      }).then(()=>{
+          console.log('accepted')
+          setOpen(false)
+      })
+    }
     return (
         <div>
             <Dialog
@@ -37,7 +56,7 @@ export default function ShowDialog() {
                 PaperComponent={PaperComponent}
                 aria-labelledby="draggable-dialog-title"
             >
-                <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+                <DialogTitle style={{cursor: 'move'}} id="draggable-dialog-title">
                     Disclaimer
                 </DialogTitle>
                 <DialogContent>
@@ -51,7 +70,7 @@ export default function ShowDialog() {
                     <Button autoFocus onClick={handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleAccept} color="primary">
                         Accept
                     </Button>
                 </DialogActions>

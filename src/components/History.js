@@ -19,7 +19,10 @@ const cardstyle = makeStyles(() => ({
 
         justifyContent: "center",
         position: "relative",
-        margin: 20,
+        marginRight:40,
+        marginLeft:40,
+        marginBottom:20,
+        marginTop:60,
         alignItems: "center",
 
     },
@@ -95,11 +98,18 @@ export default function ShowDisease() {
     }, []);
 
     const toUpper = (t) => {
-
-        for (let i = 0; i < t.length; i++) {
-            t[i] = t[i].charAt(0).toUpperCase()+t[i].slice(1);
+        let x = ""
+        try {
+            for (let i = 0; i < t.length; i++) {
+                t[i] = t[i].charAt(0).toUpperCase()+t[i].slice(1);
+            }
+            x = t.join(", ");
         }
-        return t;
+        catch(e){
+            x = 'N/A'
+        }
+        return x;
+
     }
     return (
         <div className={classes.root}>
@@ -122,7 +132,7 @@ export default function ShowDisease() {
                                     {row.disease}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                    {toUpper(row.precautions).join(", ")}
+                                    {toUpper(row.precautions)}
                                 </TableCell>
                                 <TableCell >{getTimeDiff(row.time_stamp, ctime)+" ago"}</TableCell>
                             </TableRow>

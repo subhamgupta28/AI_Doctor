@@ -39,7 +39,7 @@ const cardstyle = makeStyles(() => ({
     },
     di:{
         borderRadius:16,
-        backgroundColor: '#180605',
+        // backgroundColor: '#180605',
     },
     ro:{
 
@@ -115,6 +115,20 @@ export default function ShowDisease() {
     const handleClose = () => {
         setOpen(false);
     };
+    const toUpper = (t) => {
+        let x = ""
+        try {
+            for (let i = 0; i < t.length; i++) {
+                t[i] = t[i].charAt(0).toUpperCase()+t[i].slice(1);
+            }
+            x = t.join(", ");
+        }
+        catch(e){
+            x = 'N/A'
+        }
+        return x;
+
+    }
     return (
         <div className={classes.root} hidden={hide}>
             <Typography hidden={hide} variant="subtitle1" gutterBottom>
@@ -154,7 +168,7 @@ export default function ShowDisease() {
                 <DialogTitle >
                     <Alert variant={"filled"} severity="error"> {"Predicted Disease is " + msg['disease']}</Alert>
                     <div className={classes.alerts}> </div>
-                    <Alert variant={"filled"} severity="success"> {"Precautions " + msg['precautions'].toString().toUpperCase()}</Alert>
+                    <Alert variant={"filled"} severity="success"> {"Precautions " + toUpper(msg['precautions'])}</Alert>
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>

@@ -1,4 +1,4 @@
-import {Chip, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@material-ui/core";
+import {Chip, Dialog, DialogActions, DialogContent, DialogTitle, Slide, TextField, Typography} from "@material-ui/core";
 import {Autocomplete, Skeleton} from "@material-ui/lab";
 import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
@@ -40,15 +40,22 @@ const searchStyle = makeStyles((theme) => ({
     },
     di:{
         borderRadius:16,
+        backgroundColor: 'rgba(255, 255, 255, 0.01)',
+        backdropFilter: 'blur(7px)',
+        // boxShadow:
+        //     "0px 0px 30px 1px rgba(70,70,70,0.8)",
     },
     ro:{
 
     },
 
 }));
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 export default function SearchSymptoms() {
     const [open, setOpen] = useState(false);
+    const [msg, setMsg] = useState("");
     const [resultList, setResult] = useState([{
         title: '',
         key: '',
@@ -81,6 +88,11 @@ export default function SearchSymptoms() {
                 for (let v in li) {
                     list.push({v, ...li[v]})
                 }
+                console.log(li, 'result')
+                if (li!==null)
+                    setMsg("Already selected symptoms are...")
+
+
                 setResult(list)
             });
             console.log("data fetched");
@@ -149,10 +161,11 @@ export default function SearchSymptoms() {
         <React.Fragment>
             <Dialog
                 classes={{paper: classes.di, root:classes.ro}}
+                TransitionComponent={Transition}
                 onClose={handleClose}
                 open={open}>
                 <DialogTitle>
-                    Search for symptoms...
+                    Search for symptoms
                 </DialogTitle>
                 <Autocomplete
                     multiple
@@ -178,7 +191,7 @@ export default function SearchSymptoms() {
                 <DialogContent
                 >
                     <Typography>
-                        Already selected symptoms
+                        {msg}
                     </Typography>
                     <div className={classes.d}>
                         {resultList ? resultList.map((di) =>

@@ -1,12 +1,10 @@
-import firebase from "../FirebaseWork"
-import {useState} from "react";
+import {Card, CardActions, CardContent, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {Card, CardContent, Icon, Typography} from "@material-ui/core";
 import {AccountCircle} from "@material-ui/icons";
 
 const style = makeStyles((theme) => ({
     di: {
-        display: "flex",
+        display:"flex",
         justifyContent: "center",
         alignItems: "center",
         marginTop: 150,
@@ -28,45 +26,35 @@ const style = makeStyles((theme) => ({
         marginBottom: 20,
     }
 }));
-export default function MyAccount() {
+
+export default function Disclaimers() {
     const classes = style();
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [uid, setUid] = useState("");
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            console.log(user)
-            setEmail(user.email)
-            setName(user.displayName);
-            setUid(user.uid);
-        }
-    })
     return (
         <div className={classes.di}>
             <Card sx={{minWidth: 275}} elevation={25} className={classes.card}>
                 <CardContent>
                     <div className={classes.ic}>
 
-                        <AccountCircle/>
+                       Disclaimer
 
                     </div>
 
                     <Typography sx={{fontSize: 14}} color={"#ff0000"} gutterBottom>
-                        <b className={classes.c}>Account Section</b>
+                        <b className={classes.c}>
+                            The predicted disease is NOT 100% true,
+                            <br/>
+                            this site uses common data about disease and
+                            <br/>
+                            their symptoms. We don't encourage you to follow with 100% belief,
+                            <br/>
+                            You may consider consulting to a physical doctor.
+                        </b>
                     </Typography>
 
 
-                    <Typography sx={{mb: 1.5}} color="text.secondary">
 
-                        {email}
-                    </Typography>
-                    <Typography variant="body2">
-                        {name}
-                        <br/>
-                        {uid}
-                    </Typography>
                 </CardContent>
             </Card>
         </div>
-    )
+    );
 }

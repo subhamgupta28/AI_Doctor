@@ -1,10 +1,10 @@
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect, useState} from "react";
-import {Avatar, Button, Chip, Grid, Paper, TextField, Typography} from "@material-ui/core";
+import {Button, Chip, Paper, Typography} from "@material-ui/core";
 import firebase from "../FirebaseWork"
-import {Autocomplete, Skeleton} from "@material-ui/lab";
+import {Skeleton} from "@material-ui/lab";
 import {Search} from "@material-ui/icons";
-
+import {useTransition, animated} from 'react-spring'
 
 const chipStyle = makeStyles((theme) => ({
     root: {
@@ -13,8 +13,8 @@ const chipStyle = makeStyles((theme) => ({
         maxWidth: '95%',
         backgroundColor: 'rgba(255, 255, 255, 0.01)',
         backdropFilter: 'blur(7px)',
-        boxShadow:
-            "0px 0px 30px 1px rgba(70,70,70,0.8)",
+        // boxShadow:
+        //     "0px 0px 30px 1px rgba(70,70,70,0.8)",
         alignItems: "center",
         justifyContent: 'center',
     },
@@ -25,13 +25,13 @@ const chipStyle = makeStyles((theme) => ({
             margin: theme.spacing(0.4),
         },
     },
-    button:{
+    button: {
 
-        marginBottom:10,
+        marginBottom: 10,
 
 
     },
-    text:{
+    text: {
         marginTop: 10,
         position: "relative",
         left: '-33%'
@@ -42,8 +42,8 @@ const chipStyle = makeStyles((theme) => ({
         borderRadius: 12,
         display: "flex",
         alignItems: "center",
-        position:"relative",
-        left:20,
+        position: "relative",
+        left: 20,
         justifyContent: 'center',
         flexWrap: 'wrap',
         '& > *': {
@@ -51,19 +51,22 @@ const chipStyle = makeStyles((theme) => ({
         },
 
     },
-    auto:{
+    auto: {
         width: 250
+    },
+    f: {
+        justifyContent: "center",
+        alignItems: "center",
     }
-
 
 
 }));
 
 export default function Chips() {
-    const [hide, setHide] = useState(true)
+    const [hide, setHide] = useState(false)
     const [diseaseList, setDiseaseList] = useState([{
-        symptom:'',
-        severity:'',
+        symptom: '',
+        severity: '',
     }]);
     const [docs, setDocs] = useState([{}]);
 
@@ -71,17 +74,17 @@ export default function Chips() {
     const dt = ['common_disease', 'above_common', 'concerning', 'slight_danger', 'average_danger', 'danger', 'critical']
     const uuid = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
-    useEffect(()=>{
+    useEffect(() => {
         const fetchData = async () => {
             const data = await db.collection("disease_severity").get()
             const value = data.docs.map(doc => doc.data());
             setDocs(value);
             try {
                 setDiseaseList(value[0]["common_disease"]);
-            }catch (e) {
+            } catch (e) {
                 console.log(e)
             }
-            setHide(false)
+            setHide(true)
         }
         fetchData().then(() => {
             console.log("data fetched");
@@ -96,7 +99,7 @@ export default function Chips() {
         const title = sp.symptom;
         // const key = Math.floor(Date.now()).toString();
         const critical = parseInt(sp.severity);
-        const reference = firebase.database().ref("AI_DOCTOR/"+uuid+"/SYMPTOMS_SELECTED");
+        const reference = firebase.database().ref("AI_DOCTOR/" + uuid + "/SYMPTOMS_SELECTED");
         const symptoms = {
             title,
             "key": title,
@@ -111,68 +114,88 @@ export default function Chips() {
     }
     const changeDType = (i) => {
         console.log(i)
-        setDiseaseList(docs[0][dt[parseInt([Math.random()*7]+"")]])
+        setDiseaseList(docs[0][dt[parseInt([Math.random() * 7] + "")]])
 
     }
 
     const colors = (n) => {
         switch (n) {
-            case 1: return "#00ce7e";
-            case 2: return "#009463";
-            case 3: return "#377FC7";
-            case 4: return "#006385";
-            case 5: return "#d9c301";
-            case 6: return "#FF9B2B";
-            case 7: return "#FF2442";
-            default: return;
+            case 1:
+                return "#00ce7e";
+            case 2:
+                return "#009463";
+            case 3:
+                return "#377FC7";
+            case 4:
+                return "#006385";
+            case 5:
+                return "#d9c301";
+            case 6:
+                return "#FF9B2B";
+            case 7:
+                return "#FF2442";
+            default:
+                return;
         }
     }
+    const transition = useTransition(hide, {
+        from: {x: 0, y: 800, opacity: 0},
+        enter: {x: 0, y: 0, opacity: 1},
+        leave: {x: 0, y: 800, opacity: 0},
+    });
 
     return (
-        <Paper className={classes.root} elevation={8} hidden={hide}>
-            <div className={classes.search}>
-                <Typography variant="h6" gutterBottom>
-                    Choose Symptoms or
-                </Typography>
-                <Button
-                    className={classes.button}
-                    variant={"text"}
-                    size={"small"}
-                    color={"primary"}
-                    id={'search_btn'}
-                    // onClick={()=>changeDType(0)}
-                >
-                    <Search/>
-                    search
-                </Button>
+        <Paper className={classes.root} elevation={8}>
+            {transition((style, item) =>
+                item ? <animated.div className={classes.f} style={style}>
 
-            </div>
-            <div className={classes.item}>
-                {diseaseList ? diseaseList.map((di)=>
-                <Chip
+                        <div className={classes.search}>
+                            <Typography variant="h6" gutterBottom>
+                                Choose Symptoms or
+                            </Typography>
+                            <Button
+                                className={classes.button}
+                                variant={"text"}
+                                size={"small"}
+                                color={"primary"}
+                                id={'search_btn'}
+                                // onClick={()=>changeDType(0)}
+                            >
+                                <Search/>
+                                search
+                            </Button>
 
-                    clickable
-                    size={"small"}
-                    onClick={()=>selectSymps(di)}
-                    color={"primary"}
-                    style={{backgroundColor: colors(parseInt(di.severity))}}
-                    // avatar={<Avatar >{di.symptom[0]}</Avatar>}
-                    label={setUpper(di.symptom)}
-                />
-                ):(
-                    <Skeleton variant="rectangular" animation="wave"  />
-                )}
-            </div>
-            <Button
-                className={classes.button}
-                variant={"text"}
-                size={"small"}
-                color={"primary"}
-                onClick={()=>changeDType(0)}
-            >
-                change symptoms
-            </Button>
+                        </div>
+                        <div className={classes.item}>
+                            {diseaseList ? diseaseList.map((di) =>
+                                <Chip
 
+                                    clickable
+                                    size={"small"}
+                                    onClick={() => selectSymps(di)}
+                                    color={"primary"}
+                                    style={{backgroundColor: colors(parseInt(di.severity))}}
+                                    // avatar={<Avatar >{di.symptom[0]}</Avatar>}
+                                    label={setUpper(di.symptom)}
+                                />
+                            ) : (
+                                <Skeleton variant="rectangular" animation="wave"/>
+                            )}
+                        </div>
+                        <Button
+                            className={classes.button}
+                            variant={"text"}
+                            size={"small"}
+                            color={"primary"}
+                            onClick={() => changeDType(0)}
+                        >
+                            change symptoms
+                        </Button>
+
+
+                    </animated.div>
+
+                    : "")}
         </Paper>
     );
 }

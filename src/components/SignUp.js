@@ -79,14 +79,23 @@ export default function SignUp({history}) {
     const handleSignUp = useCallback(async event => {
         setHide(true)
         event.preventDefault();
-        const {email, password} = event.target.elements;
+        const {email, password, name} = event.target.elements;
         try {
             console.log(email.value + " " + password.value);
             await firebase
                 .auth()
 
                 .createUserWithEmailAndPassword(email.value, password.value)
-                .then(() => {
+                .then((user) => {
+                    console.log(user.user.uid, "uiddd")
+                    const ctime = Date.now();
+                    const ref = firebase.database().ref("AI_DOCTOR/" + user.user.uid + "/PROFILE");
+                    ref.set({
+                        NAME: name.value,
+                        EMAIL: email.value,
+                        CREATED_ON: parseInt(ctime.toString()),
+                        AGREEMENT: false,
+                    })
                 });
             history.push("/");
 

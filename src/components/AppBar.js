@@ -1,18 +1,18 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {
     AppBar, Box, Dialog,
-    IconButton, InputAdornment,
+    IconButton, InputAdornment, Slide,
     TextField,
     Toolbar,
     Typography
 } from "@material-ui/core";
 import medbag from "../drawables/icon.svg";
 import SearchIcon from "@material-ui/icons/Search";
-import {AccountCircle, Close, HistoryOutlined, Lock, PersonOutlined} from "@material-ui/icons";
+import {AccountCircle, AddAlert, Close, HistoryOutlined, Lock, PersonOutlined} from "@material-ui/icons";
 import React, {useEffect, useState} from "react";
 import useDelayedTask from "./useDelayedTask";
 import firebase from "../FirebaseWork"
-import {Autocomplete} from "@material-ui/lab";
+import { Autocomplete} from "@material-ui/lab";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -21,12 +21,13 @@ import ListItemText from "@material-ui/core/ListItemText";
 import History from "./History";
 import Button from "@material-ui/core/Button";
 import MyAccount from "./MyAccount";
-
+import Disclaimers from "./Disclaimers";
 
 const appbarstyle = makeStyles((theme) => ({
     root: {
         width: '100%',
         flexGrow: 1,
+
 
     },
     grow: {
@@ -63,22 +64,35 @@ const appbarstyle = makeStyles((theme) => ({
         position: "relative",
     },
     btn: {
-
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        // marginTop:10,
+        // marginRight:30,
+
     },
     active:{
         backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    },
+    di:{
+        backgroundColor: 'rgba(255, 255, 255, 0.01)',
+        backdropFilter: 'blur(7px)',
+    },
+    ro:{
+
+    },
+    t:{
+        backdropFilter: 'blur(7px)',
     }
 
 }));
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 export default function PrimaryAppBar() {
     const classes = appbarstyle();
     const [open, setOpen] = useState(false);
-    const [hisOpen, setHisOpen] = useState(false);
-    const [accOpen, setAcOpen] = useState(false);
+    const [component, setComponent] = useState();
+    const [copen, setCOpen] = useState(false);
     const [op, setOp] = useState([]);
     const [searchMsg, setSearch] = useState('');
     const [res, setRes] = useState([{
@@ -134,12 +148,26 @@ export default function PrimaryAppBar() {
         {
             text: "Profile",
             icon: <PersonOutlined/>,
-            onClick: () => setAcOpen(true)
+            onClick: (() => {
+                setComponent(<MyAccount/>)
+                setCOpen(true)
+            })
         },
         {
             text: "History",
             icon: <HistoryOutlined/>,
-            onClick: () => setHisOpen(true)
+            onClick:(() => {
+                setComponent(<History/>)
+                setCOpen(true)
+            })
+        },
+        {
+            text: "Disclaimer",
+            icon: <AddAlert/>,
+            onClick: (() => {
+                setComponent(<Disclaimers/>)
+                setCOpen(true)
+            })
         },
         {
             text: "Logout",
@@ -156,17 +184,14 @@ export default function PrimaryAppBar() {
         firebase.auth().signOut().then(() => console.log("logged out"))
     }
 
-    const handleAcClose = () => {
-        setAcOpen(false)
-    }
-    const handleHisClose = () => {
-        setHisOpen(false)
+    const handleCClose = () => {
+        setCOpen(false)
     }
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} >
             <AppBar position="sticky" color={"transparent"} elevation={8}>
-                <Toolbar variant={'dense'}>
+                <Toolbar variant={'dense'} className={classes.t}>
                     <IconButton
                         edge="start"
                         className={classes.menuButton}
@@ -185,6 +210,7 @@ export default function PrimaryAppBar() {
                     </div>
                     <div className={classes.search}>
                         <Autocomplete
+                            hidden
                             freeSolo
                             id="combo-box-demo"
                             options={op}
@@ -235,34 +261,32 @@ export default function PrimaryAppBar() {
                             {itemsList.map((item, index) => {
                                 const {text, icon, onClick} = item;
                                 return (
-
                                     <ListItem button key={text} onClick={onClick} activeClassName={classes.active}>
                                         {icon && <ListItemIcon>{icon}</ListItemIcon>}
                                         <ListItemText primary={text} />
                                     </ListItem>
-
-
                                 )
                             })}
                         </List>
                     </Box>
-
                 </Drawer>
             </React.Fragment>
             <Dialog
+                classes={{paper: classes.di, root:classes.ro}}
                 fullScreen
-                open={hisOpen}
-                onClose={handleHisClose}
+                open={copen}
+                TransitionComponent={Transition}
+                onClose={handleCClose}
                 scroll={"paper"}
             >
-                <History/>
+
+                {component}
                 <div
                     className={classes.btn}
                 >
                     <Button
-
                         variant={"contained"}
-                        onClick={handleHisClose}
+                        onClick={handleCClose}
                         size={"small"}
                     >
                         <Close/>
@@ -270,28 +294,6 @@ export default function PrimaryAppBar() {
                     </Button>
                 </div>
             </Dialog>
-            <Dialog
-                fullScreen
-                open={accOpen}
-                onClose={handleAcClose}
-                scroll={"paper"}
-            >
-                <MyAccount/>
-                <div
-                    className={classes.btn}
-                >
-                    <Button
-
-                        variant={"contained"}
-                        onClick={handleAcClose}
-                        size={"small"}
-                    >
-                        <Close/>
-                        Close
-                    </Button>
-                </div>
-            </Dialog>
-
         </div>
     );
 }

@@ -29,6 +29,9 @@ export const AuthProvider = ({ children }) => {
         return (
             <Backdrop className={classes.backdrop} open={true} >
                 <CircularProgress color="secondary" />
+                {/*The predicted disease is NOT 100% true, this site uses common data about disease and*/}
+                {/*their symptoms. We don't encourage you to follow with 100% belief,*/}
+                {/*You may consider consulting to a physical doctor.*/}
             </Backdrop>
         )
     }
