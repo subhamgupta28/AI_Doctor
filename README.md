@@ -1,2 +1,3 @@
 # AI Doctor React App
-[Website](https://aidoctor-636e8.web.app/)
+Checkout the website
+[AIDoctor](https://aidoctor-636e8.web.app/)
