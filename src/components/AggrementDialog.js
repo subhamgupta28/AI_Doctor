@@ -24,15 +24,19 @@ export default function ShowDialog() {
     const ref = firebase.database().ref("AI_DOCTOR/" + uid + "/PROFILE");
     useEffect(() => {
         ref.on("value", (snapshot) => {
-            const data = snapshot.val();
-            console.log(data.AGREEMENT===true)
-            if (data.AGREEMENT !== undefined) {
-                if (data.AGREEMENT === false)
+            try{
+                const data = snapshot.val();
+                if (data.AGREEMENT !== undefined) {
+                    if (data.AGREEMENT === false)
+                        setOpen(true)
+                } else {
                     setOpen(true)
-            } else {
-                setOpen(true)
-                console.log(data.AGREEMENT);
+                    console.log(data.AGREEMENT);
+                }
+            }catch (e){
+
             }
+
 
 
         })

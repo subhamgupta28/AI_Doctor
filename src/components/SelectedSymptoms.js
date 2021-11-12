@@ -170,10 +170,7 @@ export default function Chips() {
                         TransitionComponent={Fade}
                         message={msg}
                         autoHideDuration={2000}
-
                     />
-
-
                 </animated.div> : "")}
         </Paper>
     );
