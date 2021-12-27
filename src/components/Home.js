@@ -37,7 +37,7 @@ export default function Home() {
                 </header>
             </div>
             {/*color="#FF2626"*/}
-            <ParticlesBg  type="cobweb" color="#FF2626" bg={true} />
+            {/*<ParticlesBg  type="cobweb" color="#FF2626" bg={true} />*/}
         </Paper>
     )
 }
