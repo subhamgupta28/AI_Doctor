@@ -22,7 +22,6 @@ const paperStyle = makeStyles((theme) => ({
 }));
 export default function Home() {
     const classes = paperStyle();
-
     return (
         <Paper className={classes.paper}>
             <div className="App">
@@ -33,11 +32,10 @@ export default function Home() {
                     <SearchSymptoms/>
                     <SelectedSymptoms/>
                     <Chips/>
-
                 </header>
             </div>
             {/*color="#FF2626"*/}
-            {/*<ParticlesBg  type="cobweb" color="#FF2626" bg={true} />*/}
+            <ParticlesBg  type="cobweb" color="#FF2626" bg={true} />
         </Paper>
     )
 }
